@@ -46,7 +46,8 @@ class EventConsumer(Document):
 
 	def update_consumer_status(self):
 		consumer_site = get_consumer_site(self.callback_url)
-		event_producer = consumer_site.get_doc("Event Producer", get_url())
+		url = get_url().replace('http:', 'https:')  # Force HTTPS
+		event_producer = consumer_site.get_doc("Event Producer", url)
 		event_producer = frappe._dict(event_producer)
 		config = event_producer.producer_doctypes
 		event_producer.producer_doctypes = []
