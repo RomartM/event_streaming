@@ -124,8 +124,9 @@ class EventProducer(Document):
 
 		user_key = frappe.db.get_value("User", self.user, "api_key")
 		user_secret = get_decrypted_password("User", self.user, "api_secret")
+		url = get_url().replace('http:', 'https:')  # Force HTTPS
 		return {
-			"event_consumer": get_url(),
+			"event_consumer": url,
 			"consumer_doctypes": json.dumps(consumer_doctypes),
 			"user": self.user,
 			"api_key": user_key,
@@ -162,7 +163,8 @@ class EventProducer(Document):
 	def update_event_consumer(self):
 		if self.is_producer_online():
 			producer_site = get_producer_site(self.producer_url)
-			event_consumer = producer_site.get_doc("Event Consumer", get_url())
+			url = get_url().replace('http:', 'https:')  # Force HTTPS
+			event_consumer = producer_site.get_doc("Event Consumer", url)
 			event_consumer = frappe._dict(event_consumer)
 			if event_consumer:
 				config = event_consumer.consumer_doctypes
@@ -220,7 +222,8 @@ def get_approval_status(config, ref_doctype):
 @frappe.whitelist()
 def pull_producer_data():
 	"""Fetch data from producer node."""
-	response = requests.get(get_url())
+	url = get_url().replace('http:', 'https:')  # Force HTTPS
+	response = requests.get(url)
 	if response.status_code == 200:
 		for event_producer in frappe.get_all("Event Producer"):
 			pull_from_node(event_producer.name)
@@ -395,10 +398,11 @@ def set_delete(update):
 
 def get_updates(producer_site, last_update, doctypes):
 	"""Get all updates generated after the last update timestamp"""
+	url = get_url().replace('http:', 'https:')  # Force HTTPS
 	docs = producer_site.post_request(
 		{
 			"cmd": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.get_update_logs_for_consumer",
-			"event_consumer": get_url(),
+			"event_consumer": url,
 			"doctypes": frappe.as_json(doctypes),
 			"last_update": last_update,
 		}

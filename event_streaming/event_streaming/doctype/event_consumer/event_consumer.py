@@ -154,10 +154,11 @@ def notify(consumer):
 	if consumer_status == "online":
 		try:
 			client = get_consumer_site(consumer.callback_url)
+			url = get_url().replace('http:', 'https:')  # Force HTTPS
 			client.post_request(
 				{
 					"cmd": "event_streaming.event_streaming.doctype.event_producer.event_producer.new_event_notification",
-					"producer_url": get_url(),
+					"producer_url": url,
 				}
 			)
 			consumer.flags.notified = True
