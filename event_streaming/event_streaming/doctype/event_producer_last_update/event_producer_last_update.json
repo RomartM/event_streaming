@@ -46,7 +46,7 @@
    "write": 1
   }
  ],
- "read_only": 1,
+ "read_only": 0,
  "sort_field": "modified",
  "sort_order": "DESC",
  "track_changes": 1
